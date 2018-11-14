@@ -9,6 +9,8 @@
   "dependencies": {
     "@types/react": "^16.7.3",
     "@types/react-dom": "^16.0.9",
+    "aws-amplify": "^1.1.10",
+    "aws-amplify-react": "^2.1.4",
     "react": "^16.6.1",
     "react-dom": "^16.6.1",
     "webpack-merge": "^4.1.4"

@@ -1,6 +1,13 @@
 import * as React from 'react'
 import * as ReactDOM from "react-dom"
 
-import Authentication from './Authentication/Authentication'
+import Amplify, { Auth, Analytics } from 'aws-amplify'
+import * as awsconfig from './aws-exports'
 
-ReactDOM.render(<Authentication />, document.getElementById('root'))
+Auth.configure(awsconfig);
+Analytics.configure(awsconfig);
+Amplify.configure(awsconfig);
+
+import {  SignIn } from './Authentication'
+
+ReactDOM.render(<SignIn />, document.getElementById('root'))
