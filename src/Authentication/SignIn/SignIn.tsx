@@ -5,44 +5,22 @@ import { withFederated }  from 'aws-amplify-react';
 
 const logger = new Logger('Sign In');
 
-// const FederatedButtons = (props) => (
-//   <Row>
-//     <Col>
-//       <Button className={s.facebook} onClick={props.facebookSignIn}>Facebook</Button>
-//       <Button className={s.google} onClick={props.googleSignIn}>Google</Button>
-//       <Button className={s.twitter} onClick={props.twitterSignIn}>Twitter</Button>
-//     </Col>
-//   </Row>
-// );
-
-// const Federated = withFederated(FederatedButtons);
-
-const federated_data = {
-    google_client_id: '',
-    facebook_app_id: '',
-    amazon_client_id: ''
-};
-
-
-export interface Props {
-  user: any,
-  authState: any,
-  authData: any,
-  username: string,
-  password: string,
-  title: string
-}
+// const federated_data = {
+//     google_client_id: '',
+//     facebook_app_id: '',
+//     amazon_client_id: ''
+// };
 
 interface State {
-  error: string,
+  error: string | null,
   username: string,
   password: string
 }
 
 
-class SignIn extends React.Component<Props, State> {
+class SignIn extends React.Component<{}, State> {
 
-  constructor(props: Props) {
+  constructor(props: any) {
     super(props);
     this.state = this.getInitialState()
   }
@@ -53,11 +31,20 @@ class SignIn extends React.Component<Props, State> {
     password: ''
   })
 
-  signIn = (username: string, password?: string) => {
-    logger.info('sign in with ' + username);
-    Auth.signIn(username, password)
-      .then(user => this.signInSuccess(user))
-      .catch(err => this.signInError(err.message));
+  public signIn = (event: any) : void => {
+    
+    event.preventDefault();
+
+    logger.info('sign in with ' + this.state.username);
+    Auth.signIn(this.state.username, this.state.password)
+      .then(user => {
+        console.log(user)
+        this.signInSuccess(user)
+      })
+      .catch(err => {
+        console.log(err)
+        this.signInError(err.message)
+      });
   }
   
   signInSuccess = (user: any) => {
@@ -75,9 +62,9 @@ class SignIn extends React.Component<Props, State> {
     this.setState({ error: err || err });
   }
 
-  handleChange = (field:any, event:any) => {
-    const { target: { value } } = event;
-    this.setState({ [field]: value });
+  public handleChange = (event: any) => {    
+    const { target: { value, name } } = event;
+    this.setState({ ...this.state, [name]: value });
   }
   
 
@@ -85,48 +72,45 @@ class SignIn extends React.Component<Props, State> {
     Auth.verifiedContact(user)
       .then(data => {
         if (!JS.isEmpty(data.verified)) {
-          this.changeState('signedIn', user);
+          console.log(user)
+          //this.changeState('signedIn', user);
         } else {
           user = Object.assign(user, data);
-          this.changeState('verifyContact', user);
+          console.log(user)
+          //this.changeState('verifyContact', user);
         }
       });
   }
 
   render() {
-
-    const { authState, authData, title } = this.props;
-    if (!['signIn'].includes(authState)) { return null; }
     
-    const { error, username, password } = this.state;
+    const { error } = this.state;
 
     return (
       <div className={`root`}>
         <div className={`container`}>
-          <h1>{title}</h1>
+          <h1>Login Component</h1>
           <p className={`lead`}>
             Log in with your username or company email address.
           </p>
           {/* <Federated federated={federated_data} onStateChange={this.changeState} /> */}
           <strong className={`lineThrough`}>OR</strong>
-          <form>
             <div className={`formGroup form-group`}>
               <label className={`label`}>Username or email address</label>
-              <input className={`input form-control`} type="text" placeholder="Username or email address" defaultValue={authData || '' } onChange={() => this.handleChange(this, `username`)}  autoFocus />
+              <input className={`input form-control`} type="text" name={`username`} placeholder="Username or email address" onChange={e => this.handleChange(e)}  autoFocus />
             </div>
             <div className={`formGroup form-group`}>
               <label className={`label`}>Password</label>
-              <input className={`input form-control`} type="password" placeholder="Password" onChange={() => this.handleChange(this, `password`)} autoFocus />
+              <input className={`input form-control`} type="password" name={`password`} placeholder="Password" onChange={e => this.handleChange(e)} autoFocus />
             </div>
-            <button className={`button`} onClick={() => this.signIn}>
+            <button className={`button`} onClick={e => this.signIn(e) }>
               Sign in
             </button>
             { error && <div className={`alert alert-danger`} role="alert">{error}</div>}
-          </form>
         </div>
       </div>
     );
   }
 }
 
-export default (SignIn);
+export default SignIn
