@@ -4,6 +4,8 @@ import * as ReactDOM from "react-dom"
 import Amplify, { Auth, Analytics } from 'aws-amplify'
 import * as awsconfig from './aws-exports'
 
+import 'bootstrap/dist/css/bootstrap.css';
+
 Auth.configure(awsconfig);
 Analytics.configure(awsconfig);
 Amplify.configure(awsconfig);
